@@ -1,0 +1,8 @@
+v1
+fully connected to all of environment
+
+v2
+can see pixels that are 3 or 4 away at most
+
+v3
+vision is occluded by walls
