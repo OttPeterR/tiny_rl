@@ -1,5 +1,6 @@
 import sys
 import curses
+import random
 
 from pycolab import ascii_art
 from pycolab import human_ui
@@ -23,11 +24,13 @@ FG_COLORS = {
         'A':(000,000,000), # player
         '#':(700,700,700), # gray wall
         'C':(650,400,000), # coin
+        ' ':(999,999,999), # nothing
     }
 BG_COLORS = {
         'A':(200,200,200), # player
         '#':(800,800,800), # gray wall
         'C':(000,000,000), # coin
+        ' ':(999,999,999), # nothing
     }
 
 class AgentSprite(prefab_sprites.MazeWalker):
@@ -52,39 +55,50 @@ class AgentSprite(prefab_sprites.MazeWalker):
         elif actions == 9:  # quit?
             the_plot.terminate_episode()
         
-        # collect a coin
-        if 'C' in layers and layers['C'][self.position]:
-            the_plot.add_reward(15)
-            the_plot.terminate_episode()
 
 class CoinHandler(plab_things.Drape):
     def __init__(self, curtain, character):
         super(CoinHandler, self).__init__(curtain, character)
         self._coins = []
-        self._remaining_coins = 10
+        self._remaining_coins = 20
+        self._coins_in_play = 1 # max number of coins on the board
+        self._coin_reward = 15
 
     def update(self, actions, board, layers, backdrop, things, the_plot):
+        # game complete
+        if self._coins==[] and self._remaining_coins==0:
+            the_plot.terminate_episode()
+        
+        # check if player collects a coin
+        for coin in self._coins:
+            if 'A' in layers and layers['A'][coin]:
+                self.curtain[coin]=False # remove coin
+                self._coins.remove(coin)
+                the_plot.add_reward(self._coin_reward)
+
         # need to add a coin
-        if len(self._coins) == 0:
-            # player just got the last coin
-            if self._remaining_coins == 0:
-                the_plot.terminate_episode()
+        if len(self._coins) < self._coins_in_play and \
+           self._remaining_coins > 0:
             
-            # place coin randomly where there is no player
+            # create random location
+            random_x = 1+int(random.random()*10)
+            random_y = 1+int(random.random()*10)
+            #TODO: Check if on a blank space
+            
+            # place the coin
+            self._coins += [(random_x, random_y)]
             self._remaining_coins -= 1
-            #TODO
-
-
-
+            self.curtain[random_x, random_y]=True
+        
 
 def make_game():
   return ascii_art.ascii_art_to_game(
       art=LEVEL,
       what_lies_beneath=' ',
       sprites={'A': AgentSprite},
-      drapes={},
-      update_schedule=[['A']],  # Move player
-      z_order=['A'])  # Draw 
+      drapes={'C': CoinHandler},
+      update_schedule=[['A'],['C']],  # Move player, then update coins
+      z_order=['C','A'])  # Draw player, then draw coins
 
 def main(argv=()):
   game = make_game()
