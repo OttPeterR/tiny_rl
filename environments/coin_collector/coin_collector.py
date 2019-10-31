@@ -1,3 +1,5 @@
+from pycolab.prefab_parts import sprites as prefab_sprites
+
 LEVEL = [ # 10x10 spaces
         '############',
         '#          #',
@@ -23,4 +25,12 @@ BG_COLORS = {
         'c':(000,000,000), # small coin
         'C':(000,000,000) # large coin
     }
+
+class AgentSprite(prefab_sprites.MazeWalker):
+    def __init__(self, corner, position, character):
+        super(PlayerSprite, self).__init__(
+        corner, position, character, impassable='#.@')
+
+    def update(self, actions, board, layers, backdrop, things, the_plot):
+        pass
 
