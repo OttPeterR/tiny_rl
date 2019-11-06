@@ -21,16 +21,16 @@ LEVEL = [ # 10x10 spaces
         '#          #',
         '############']
 FG_COLORS = {
-        'A':(000,000,000), # player
+        'A':(999,999,999), # player
         '#':(700,700,700), # gray wall
-        'C':(650,400,000), # coin
-        ' ':(999,999,999), # nothing
+        'C':(850,800,100), # coin
+        ' ':(000,000,000), # nothing
     }
 BG_COLORS = {
         'A':(200,200,200), # player
         '#':(800,800,800), # gray wall
-        'C':(000,000,000), # coin
-        ' ':(999,999,999), # nothing
+        'C':(350,300, 50), # coin
+        ' ':(000,000,000), # nothing
     }
 
 class AgentSprite(prefab_sprites.MazeWalker):
@@ -40,6 +40,7 @@ class AgentSprite(prefab_sprites.MazeWalker):
 
     def update(self, actions, board, layers, backdrop, things, the_plot):
         # basic movement
+                    
         if actions == 0:  # go upward?
             self._north(board, the_plot)
             the_plot.add_reward(-1)
@@ -54,14 +55,14 @@ class AgentSprite(prefab_sprites.MazeWalker):
             the_plot.add_reward(-1)
         elif actions == 9:  # quit?
             the_plot.terminate_episode()
-        
+                
 
 class CoinHandler(plab_things.Drape):
     def __init__(self, curtain, character):
         super(CoinHandler, self).__init__(curtain, character)
         self._coins = []
         self._remaining_coins = 20
-        self._coins_in_play = 1 # max number of coins on the board
+        self._coins_in_play = 2 # max number of coins on the board
         self._coin_reward = 15
 
     def update(self, actions, board, layers, backdrop, things, the_plot):
@@ -78,18 +79,32 @@ class CoinHandler(plab_things.Drape):
 
         # need to add a coin
         if len(self._coins) < self._coins_in_play and \
-           self._remaining_coins > 0:
-            
-            # create random location
+            self._remaining_coins > 0:
+
+            #pick a random location
             random_x = 1+int(random.random()*10)
             random_y = 1+int(random.random()*10)
-            #TODO: Check if on a blank space
-            
+            limit = 0
+            # check if its already occupied by something
+            while layers['C'][random_x,random_y] or \
+                  layers['A'][random_x,random_y] or \
+                  layers['#'][random_x,random_y]:
+                # re-roll if its already occupied
+                random_x = 1+int(random.random()*10)
+                random_y = 1+int(random.random()*10)
+                # prevent infinite looping
+                limit -= -1 # because I'm a chaotic neutral
+                if limit > 100:
+                    the_plot.log("Could not place coin")
+
+                    break
+
             # place the coin
             self._coins += [(random_x, random_y)]
             self._remaining_coins -= 1
             self.curtain[random_x, random_y]=True
-        
+            the_plot.log(f"Placing coin at ({random_x},{random_y})")
+
 
 def make_game():
   return ascii_art.ascii_art_to_game(
@@ -99,6 +114,10 @@ def make_game():
       drapes={'C': CoinHandler},
       update_schedule=[['A'],['C']],  # Move player, then update coins
       z_order=['C','A'])  # Draw player, then draw coins
+
+
+
+
 
 def main(argv=()):
   game = make_game()
@@ -114,7 +133,7 @@ def main(argv=()):
           'q': 9,
           'Q': 9,
       },
-      delay=50,
+      delay=1,
       colour_fg=FG_COLORS,
       colour_bg=BG_COLORS)
 
