@@ -4,10 +4,10 @@ import numpy as np
 class RandomAgent(agent.Agent):
     def __init__(self, actions):
         super(RandomAgent).__init__()
-        self.actions=actions+1
+        self.actions=actions
 
     def act(self, state):
-        return np.random.choice(self.actions)
+        return np.random.choice(self.actions+1)
 
     def learn(self, state, action, reward, game_over):
         pass
