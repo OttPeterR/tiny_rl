@@ -2,17 +2,14 @@ from agents import agent
 import numpy as np
 import tensorflow
 
-
-
 def _construct_model(inputs,outputs):
     return None
 
-
 class DeepNNAgent(agent.Agent):
-    def __init__(self, actions, inputs):
-        seper(DeepNNAgent).__init__()
+    def __init__(self, actions, sample_state):
+        # super(DeepNNAgent).__init__(actions, sample_state)
         self.actions=actions
-        self.model = _construct_model(inputs, actions)
+        self.model = _construct_model(sample_state, actions)
 
 
     def act(self, state):

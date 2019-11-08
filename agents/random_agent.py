@@ -2,8 +2,8 @@ from agents import agent
 import numpy as np
 
 class RandomAgent(agent.Agent):
-    def __init__(self, actions):
-        super(RandomAgent).__init__()
+    def __init__(self, actions, sample_state):
+        # super(RandomAgent).__init__(actions, sample_state)
         self.actions=actions
 
     def act(self, state):

@@ -5,6 +5,10 @@ import six
 class Agent():
 
     @abc.abstractmethod
+    def __init__(self, actions, sample_state):
+        pass
+
+    @abc.abstractmethod
     def act(self, state):
         pass
 
