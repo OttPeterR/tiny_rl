@@ -4,9 +4,11 @@ from agents import random_agent, deep_nn_agent
 ### Agent Constructors
 ###
 def RandomAgent(actions):
+    from agents import random_agent
     return random_agent.RandomAgent(actions)
 
 def DeepNNAgent(actions, inputs):
+    from agents import deep_nn_agent
     return deep_nn_agent.DeepNNAgent(actions, inputs)
 
 
