@@ -9,10 +9,10 @@ def _construct_model(inputs,outputs):
 
 
 class DeepNNAgent(agent.Agent):
-    def __init__(self, actions, sample_state):
+    def __init__(self, actions, inputs):
         seper(DeepNNAgent).__init__()
         self.actions=actions
-        self.model = _construct_model(sample_state, actions)
+        self.model = _construct_model(inputs, actions)
 
 
     def act(self, state):
@@ -23,6 +23,8 @@ class DeepNNAgent(agent.Agent):
 
     def checkpoint(self, filename):
         # model.save(filename)
+        pass
 
     def load(self, checkpoint_file):
         # self.model.load(checkpoint_file)
+        pass
