@@ -43,18 +43,21 @@ while True:
 
     observation, reward, _discount = env.its_showtime()
     total_reward = 0
-    total_actions = 0
+    total_steps = 0
 
     time_action_sum = 0
     time_learn_sum = 0
+    time_step_sum = 0
 
     while not env.game_over:
+        time_step_start = time.time()
+        total_steps += 1
+
         # Act
         time_before_action = time.time()  
         action = agent.act(observation)
         action_duration = time.time() - time_before_action
         time_action_sum += action_duration
-        total_actions += 1
 
         # Simulate one Time Step
         observation, reward, _discount = env.play(action)
@@ -73,11 +76,13 @@ while True:
     #/ round complete
 
     round_duration = time.time() - time_round_start
-    avg_time_per_actions = time_action_sum/total_actions
-    avg_time_per_learn = time_learn_sum/total_actions
+    avg_time_per_actions = time_action_sum/total_steps
+    avg_time_per_learn = time_learn_sum/total_steps
+    avg_time_per_step = time_step_sum/total_steps
 
     logging.info(f"  Total Reward: {total_reward:0.1f}")
     logging.info(f"  Avg. Seconds/Action: {avg_time_per_actions:0.4f} ")
     logging.info(f"  Avg. Seconds/Learn: {avg_time_per_learn:0.4f} ")
+    logging.info(f"  Avg. Seconds/Step:  {avg_time_per_step:0.4f} ")
     logging.info(f"  Round Time (Seconds): {round_duration:0.2f}")
 
