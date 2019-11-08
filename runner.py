@@ -69,7 +69,10 @@ while True:
         learn_duration = time.time() - time_before_learn
         time_learn_sum += learn_duration
 
-        # DRaw to the screen
+        time_step_duration = time.time() - time_step_start
+        time_step_sum += time_step_duration
+
+        # Draw to the screen
         if render:
             time.sleep(1.0/frames_per_second)
             # ??? UI.render ???
@@ -83,6 +86,6 @@ while True:
     logging.info(f"  Total Reward: {total_reward:0.1f}")
     logging.info(f"  Avg. Seconds/Action: {avg_time_per_actions:0.4f} ")
     logging.info(f"  Avg. Seconds/Learn: {avg_time_per_learn:0.4f} ")
-    logging.info(f"  Avg. Seconds/Step:  {avg_time_per_step:0.4f} ")
+    logging.info(f"  Avg. Seconds/Step:  {avg_time_per_step:0.4f} (Excludes rendering)")
     logging.info(f"  Round Time (Seconds): {round_duration:0.2f}")
 
