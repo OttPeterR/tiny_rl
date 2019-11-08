@@ -107,37 +107,40 @@ class CoinHandler(plab_things.Drape):
 
 
 def make_game():
-  return ascii_art.ascii_art_to_game(
-      art=LEVEL,
-      what_lies_beneath=' ',
-      sprites={'A': AgentSprite},
-      drapes={'C': CoinHandler},
-      update_schedule=[['A'],['C']],  # Move player, then update coins
-      z_order=['C','A'])  # Draw player, then draw coins
+    return ascii_art.ascii_art_to_game(
+        art=LEVEL,
+        what_lies_beneath=' ',
+        sprites={'A': AgentSprite},
+        drapes={'C': CoinHandler},
+        update_schedule=[['A'],['C']],  # Move player, then update coins
+z_order=['C','A'])  # Draw player, then draw coins
 
-
-
-
+def make_ui(*,keys_to_actions={'q': 9,'Q': 9},delay=0.25):
+    return human_ui.CursesUi(
+                keys_to_actions=keys_to_actions,
+                delay=delay,
+                colour_fg=FG_COLORS,
+                colour_bg=BG_COLORS)
 
 def main(argv=()):
-  game = make_game()
+    game = make_game()
 
-  ui = human_ui.CursesUi(
-      keys_to_actions={
-          # Basic movement.
-          curses.KEY_UP: 0,
-          curses.KEY_DOWN: 1,
-          curses.KEY_LEFT: 2,
-          curses.KEY_RIGHT: 3,
-          -1: 4,  # Do nothing.
-          'q': 9,
-          'Q': 9,
-      },
-      delay=1,
-      colour_fg=FG_COLORS,
-      colour_bg=BG_COLORS)
+    ui = human_ui.CursesUi(
+            keys_to_actions={
+              # Basic movement.
+              curses.KEY_UP: 0,
+              curses.KEY_DOWN: 1,
+              curses.KEY_LEFT: 2,
+              curses.KEY_RIGHT: 3,
+              -1: 4,  # Do nothing.
+              'q': 9,
+              'Q': 9,
+            },
+            delay=1,
+            colour_fg=FG_COLORS,
+            colour_bg=BG_COLORS)
 
-  ui.play(game)
+    ui.play(game)
 
 
 if __name__ == '__main__':
