@@ -1,4 +1,3 @@
-from agents import random_agent, deep_nn_agent
 
 ###
 ### Agent Constructors
