@@ -1,5 +1,5 @@
 ###
-### Agent Constructors
+### Environment Constructors
 ###
 def CoinCollectorEnvironment():
     from environments.coin_collector import coin_collector
@@ -14,7 +14,7 @@ def ShockwaveEnvironment(level):
     return shockwave.make_game(level)
 
 ###
-### Convenience Agent Constructors
+### Convenience Environment Constructors
 ###
 
 env_dict = {
