@@ -23,6 +23,7 @@ my_parser.add_argument('-agent', type=str, default="random",
                        help=f'The Agent to use: {agent_helper.agentList()}')
 my_parser.add_argument('-env', type=str, default="coin_collector",
                        help=f'The Environment to use: {env_helper.environmentList()}')
+my_parser.add_argument('-fps', type=int, default=-1, help='Frames per Second')
 args = my_parser.parse_args()
 
 
@@ -30,12 +31,13 @@ args = my_parser.parse_args()
 logging.info(f"Creating...")
 logging.info(f"Agent: {args.agent}")
 logging.info(f"Env:   {args.env}")
-render = False
-frames_per_second = args
+render = True if args.fps > 0 else False
+frames_per_second = args.fps
+frame_time = 1.0/frames_per_second
 game_creator_func = env_helper.CoinCollectorEnvironment
 env = game_creator_func()
 observation, _, _ = env.its_showtime()
-# env.get_actions = 4
+#FIXME env.get_actions = 4
 actions = 4
 agent = agent_helper.getAgent(args.agent)(actions, observation)
 ui = env_helper.getEnvironment(args.env)
@@ -45,7 +47,7 @@ logging.info("Setup Complete\n")
 logging.info("Beginning Training...")
 time_training_start = time.time()
 while True:
-    logging.info("Starting New Game.")
+    logging.info("Starting New Game...")
     time_round_start = time.time()
     env = game_creator_func()
 
@@ -66,8 +68,7 @@ while True:
         # Act
         time_before_action = time.time()  
         action = agent.act(observation)
-        action_duration = time.time() - time_before_action
-        time_action_sum += action_duration
+        time_action_sum += time.time() - time_before_action
 
         # Simulate one Time Step
         observation, reward, _discount = env.play(action)
@@ -76,16 +77,17 @@ while True:
         # Learn
         time_before_learn = time.time()
         agent.learn(observation, action, reward, env.game_over)
-        learn_duration = time.time() - time_before_learn
-        time_learn_sum += learn_duration
+        time_learn_sum += time.time() - time_before_learn
 
         time_step_duration = time.time() - time_step_start
         time_step_sum += time_step_duration
-
+        
         # Draw to the screen
         if render:
-            time.sleep(1.0/frames_per_second)
-            # ??? UI.render ???
+            time_diff = frame_time - time_step_duration
+            if time_diff>0:
+                time.sleep(time_diff)
+            #FIXME ??? UI.render ???
 
     round_duration = time.time() - time_round_start
     avg_time_per_actions = time_action_sum/total_steps
@@ -100,3 +102,4 @@ while True:
     logging.info(f"Round Time (Seconds): {round_duration:0.2f}")
     logging.info("Round Complete\n")
 
+loggin.info("Training Complete.")
