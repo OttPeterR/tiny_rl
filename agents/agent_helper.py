@@ -24,6 +24,8 @@ def A3CAgent():
 agent_dict = {
     "random":RandomAgent,
     "deep_nn":DeepNNAgent,
+    "rainbow":RainbowAgent,
+    "a3c":A3CAgent,
 }
 
 def agentList():
