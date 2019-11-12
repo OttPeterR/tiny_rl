@@ -9,15 +9,21 @@ class Memory():
         self.reward=reward
 
 class MemoryBuffer():
-    def __init__(self):
+    def __init__(self, env_name):
+        self.env_name = env_name
         self.memories=[]
     
     @property
     def size(self):
-        return len(self.memories)
+        return len(self.memories)    
+    
+    def addMemory(memory):
+        self.memories += memory
     
     def getBatch(self, n):
-        if self.size < n:
-            return None
-        rand_inds = None # generate n random numbers, non repeating 0 to .size
+        assert self.size > n, "Not enough memories for requested batch size"
+        rand_inds = None # n random ints, non repeating, 0-self.size
         return self.memories[rand_inds]
+
+    def clearMemories(self):
+        self.memories=[]
