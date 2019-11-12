@@ -10,6 +10,13 @@ def DeepNNAgent():
     from agents import deep_nn_agent
     return deep_nn_agent.DeepNNAgent
 
+def RandbowAgent():
+    from agents import rainbow
+    return rainbow.RainbowAgent
+    
+def A3CAgent():
+    from agents import a3c
+    return a3c.A3CAgent
 
 ###
 ### Convenience Agent Constructors

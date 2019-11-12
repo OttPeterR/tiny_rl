@@ -2,7 +2,7 @@ import abc
 import six
 
 @six.add_metaclass(abc.ABCMeta)
-class Agent():
+class A3CAgent():
 
     @abc.abstractmethod
     def __init__(self, actions, sample_state):

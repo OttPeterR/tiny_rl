@@ -2,7 +2,7 @@ import abc
 import six
 
 @six.add_metaclass(abc.ABCMeta)
-class Agent():
+class RainbowAgent():
 
     @abc.abstractmethod
     def __init__(self, actions, sample_state):
