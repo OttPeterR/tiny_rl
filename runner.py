@@ -24,6 +24,7 @@ my_parser.add_argument('-agent', type=str, default="random",
 my_parser.add_argument('-env', type=str, default="coin_collector",
                        help=f'The Environment to use: {env_helper.environmentList()}')
 my_parser.add_argument('-fps', type=int, default=-1, help='Frames per Second')
+my_parser.add_argument('-steps', type=int, default=0, help="Total steps per round before ending, 0 for unlimited steps")
 args = my_parser.parse_args()
 
 
@@ -34,6 +35,7 @@ logging.info(f"Env:   {args.env}")
 render = True if args.fps > 0 else False
 frames_per_second = args.fps
 frame_time = 1.0/frames_per_second
+max_steps = args.steps if args.steps>0 else 0
 game_creator_func = env_helper.CoinCollectorEnvironment
 env = game_creator_func()
 observation, _, _ = env.its_showtime()
@@ -61,7 +63,7 @@ while True:
     time_learn_sum = 0
     time_step_sum = 0
 
-    while not env.game_over:
+    while not env.game_over or total_steps < max_steps:
         time_step_start = time.time()
         total_steps += 1
 
