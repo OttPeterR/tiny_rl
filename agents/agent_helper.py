@@ -10,7 +10,7 @@ def DeepNNAgent():
     from agents import deep_nn_agent
     return deep_nn_agent.DeepNNAgent
 
-def RandbowAgent():
+def RainbowAgent():
     from agents import rainbow
     return rainbow.RainbowAgent
     
