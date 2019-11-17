@@ -3,12 +3,11 @@ import time
 import argparse
 import platform
 import numpy as np
+from tqdm import tqdm
 
 ### tiny_rl packages
 from environments import environment_helper as env_helper
 from agents import agent_helper
-
-
 
 
 ### some system info
@@ -24,7 +23,8 @@ my_parser.add_argument('-agent', type=str, default="random",
 my_parser.add_argument('-env', type=str, default="coin_collector",
                        help=f'The Environment to use: {env_helper.environmentList()}')
 my_parser.add_argument('-fps', type=int, default=-1, help='Frames per Second')
-my_parser.add_argument('-steps', type=int, default=0, help="Total steps per round before ending, 0 for unlimited steps")
+my_parser.add_argument('-steps', type=int, default=-1, help="Total steps per round before ending, 0 for unlimited steps")
+my_parser.add_argument('-games', type=int, default=-1, help="Total number of games to play, 0 for unlimited")
 args = my_parser.parse_args()
 
 
@@ -35,7 +35,8 @@ logging.info(f"Env:   {args.env}")
 render = True if args.fps > 0 else False
 frames_per_second = args.fps
 frame_time = 1.0/frames_per_second
-max_steps = args.steps if args.steps>0 else 0
+max_steps = args.steps if args.steps>0 else -1
+max_games = args.games if args.games>0 else -1
 game_creator_func = env_helper.CoinCollectorEnvironment
 env = game_creator_func()
 observation, _, _ = env.its_showtime()
@@ -45,11 +46,16 @@ agent = agent_helper.getAgent(args.agent)(actions, observation)
 ui = env_helper.getEnvironment(args.env)
 logging.info("Setup Complete\n")
 
+
+
 ### Run it
 logging.info("Beginning Training...")
 time_training_start = time.time()
-while True:
-    logging.info("Starting New Game...")
+
+total_games=0
+while max_games==-1 or total_games<max_games:
+    total_games+=1
+    logging.info(f"[Game {total_games}]")
     time_round_start = time.time()
     env = game_creator_func()
 
@@ -63,9 +69,12 @@ while True:
     time_learn_sum = 0
     time_step_sum = 0
 
-    while not env.game_over or total_steps < max_steps:
+    prog_bar = tqdm(total=max_steps if max_steps>0 else 10_000_000)
+    prog_bar.update(0)
+    while (not env.game_over) and (max_steps==-1 or total_steps<max_steps):
         time_step_start = time.time()
         total_steps += 1
+        prog_bar.update(total_steps)
 
         # Act
         time_before_action = time.time()  
@@ -97,11 +106,15 @@ while True:
     avg_time_per_step = time_step_sum/total_steps
 
     ### Print out final metrics after one round
+    prog_bar.close()
+    if not env.game_over:
+        logging.info(f"Game Maxed-Out Step Limit, No Victory")
     logging.info(f"Total Reward: {total_reward:0.1f}")
     logging.info(f"Avg. Seconds/Action: {avg_time_per_actions:0.4f} ")
     logging.info(f"Avg. Seconds/Learn: {avg_time_per_learn:0.4f} ")
     logging.info(f"Avg. Seconds/Step:  {avg_time_per_step:0.4f} (Excludes rendering)")
+    logging.info(f"Total Steps: {total_steps}")
     logging.info(f"Round Time (Seconds): {round_duration:0.2f}")
     logging.info("Round Complete\n")
 
-loggin.info("Training Complete.")
+logging.info("Training Complete.")
