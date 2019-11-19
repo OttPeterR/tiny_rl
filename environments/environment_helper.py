@@ -37,7 +37,7 @@ def getEnvironment(name):
         return None
     return env_dict[name][0](), env_dict[name][1]
 
-def getEnvironment(name):
+def getUI(name):
     if name not in ui_dict:
         raise(f"{name} not available. Valid choices: {ui_dict.keys()}")
         return None
