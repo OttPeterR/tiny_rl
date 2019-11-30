@@ -13,6 +13,12 @@ Tiny Reinforcement Learning - So small it can be run on a Raspberry Pi
     `pip install -r requirements.txt`
 
     if you're on a raspberry pi, this is gonna take about 15 minutes, also it'll heat up your pi, so make sure it's well ventilated
-1. Run a demo to check that everything is working
+1. Test it out
     
-    `python portal_demo.py`
+    1. Play an environment yourself:
+
+        `python environments/coin_collector/coin_collector.py`
+    
+    1. Test the random agent in an environment
+    
+        `python runner.py -env coin_collector -agent random -step 100 -games 3`
