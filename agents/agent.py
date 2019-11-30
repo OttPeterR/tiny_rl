@@ -13,7 +13,11 @@ class Agent():
         pass
 
     @abc.abstractmethod
-    def learn(self, state, action, reward, game_over):
+    def saveStateTransition(self, old_state, new_state, action, reward, game_over):
+        pass
+
+    @abc.abstractmethod
+    def learn(self):
         pass
 
     @abc.abstractmethod

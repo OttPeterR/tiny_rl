@@ -30,7 +30,7 @@ args = my_parser.parse_args()
 
 
 ### create everything
-logging.info(f"Creating...")
+logging.info(f"Starting Environment...")
 render = True if args.fps > 0 else False
 frames_per_second = args.fps
 frame_time = 1.0/frames_per_second
@@ -49,13 +49,13 @@ checkpoint = args.checkpoint
 if checkpoint is not None:
     agent.load(f"./agents/checkpoints/{args.checkpoint}")
     logging.info(f"Checkpoint Loaded")
-    
+
 logging.info("Setup Complete\n")
 
 
 
 ### Run it
-logging.info("Beginning Training...")
+logging.info("Beginning Training...\n")
 time_training_start = time.time()
 
 total_games=0
@@ -67,15 +67,17 @@ while max_games==-1 or total_games<max_games:
 
     ### Start environment
     observation, reward, _discount = env.its_showtime()
-    
+    previous_observation = observation
+
     ### Init timers and counters
     total_reward = 0
     total_steps = 0
     time_action_sum = 0
     time_learn_sum = 0
     time_step_sum = 0
+    action_sum = [0]*actions
 
-    prog_bar = tqdm(total=max_steps if max_steps>0 else 10_000)
+    prog_bar = tqdm(total=max_steps if max_steps>0 else 10_000, desc="Playing")
     prog_bar.update(0)
     while (not env.game_over) and (max_steps==-1 or total_steps<max_steps):
         time_step_start = time.time()
@@ -90,11 +92,12 @@ while max_games==-1 or total_games<max_games:
         # Simulate one Time Step
         observation, reward, _discount = env.play(action)
         total_reward += reward if reward is not None else 0
+        action_sum[action] += 1
+        agent.saveStateTransition(previous_observation, observation, action, reward, env.game_over)
+        previous_observation = observation
 
         # Learn
-        time_before_learn = time.time()
-        agent.learn(observation, action, reward, env.game_over)
-        time_learn_sum += time.time() - time_before_learn
+        
 
         time_step_duration = time.time() - time_step_start
         time_step_sum += time_step_duration
@@ -105,21 +108,29 @@ while max_games==-1 or total_games<max_games:
             if time_diff>0:
                 time.sleep(time_diff)
             #TODO UI.render 
+    prog_bar.close()
+
+    # Learn after round
+    logging.info("Learning...")
+    time_before_learn = time.time()
+    agent.learn()
+    time_learn_sum += time.time() - time_before_learn
+
+    # Compute time
     round_duration = time.time() - time_round_start
     avg_time_per_actions = time_action_sum/total_steps
-    avg_time_per_learn = time_learn_sum/total_steps
     avg_time_per_step = time_step_sum/total_steps
 
     ### Print out final metrics after one round
-    prog_bar.close()
     if not env.game_over:
-        logging.info(f"Game Maxed-Out Step Limit, No Victory")
+        logging.info(f"! Game Maxed-Out Step Limit, No Victory")
     logging.info(f"Total Reward: {total_reward:0.1f}")
     logging.info(f"Avg. Seconds/Action: {avg_time_per_actions:0.4f} ")
-    logging.info(f"Avg. Seconds/Learn: {avg_time_per_learn:0.4f} ")
+    logging.info(f"Learn Time: {time_learn_sum:0.4f} ")
     logging.info(f"Avg. Seconds/Step:  {avg_time_per_step:0.4f} (Excludes rendering)")
     logging.info(f"Total Steps: {total_steps}")
     logging.info(f"Round Time (Seconds): {round_duration:0.2f}")    
+    logging.info(f"Action Counts: {action_sum}")
     checkpoint_file = f"./agents/checkpoints/{args.agent}-round_{total_games}"
     checkpoint_file = agent.checkpoint(checkpoint_file)
     logging.info(f"Checkpoint saved to: {checkpoint_file}")
