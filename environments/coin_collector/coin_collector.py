@@ -8,18 +8,17 @@ from pycolab import things as plab_things
 from pycolab.prefab_parts import sprites as prefab_sprites
 
 LEVEL = [ # 10x10 spaces
-        '############',
-        '#          #',
-        '#          #',
-        '#          #',
-        '#          #',
-        '#    A     #',
-        '#          #',
-        '#          #',
-        '#          #',
-        '#          #',
-        '#          #',
-        '############']
+        '###########',
+        '#         #',
+        '#         #',
+        '#         #',
+        '#         #',
+        '#    A    #',
+        '#         #',
+        '#         #',
+        '#         #',
+        '#         #',
+        '###########']
 FG_COLORS = {
         'A':(999,999,999), # player
         '#':(700,700,700), # gray wall
@@ -82,16 +81,16 @@ class CoinHandler(plab_things.Drape):
             self._remaining_coins > 0:
 
             #pick a random location
-            random_x = 1+int(random.random()*10)
-            random_y = 1+int(random.random()*10)
+            random_x = 1+int(random.random()*8) # width
+            random_y = 1+int(random.random()*8) # height
             limit = 0
             # check if its already occupied by something
             while layers['C'][random_x,random_y] or \
                   layers['A'][random_x,random_y] or \
                   layers['#'][random_x,random_y]:
                 # re-roll if its already occupied
-                random_x = 1+int(random.random()*10)
-                random_y = 1+int(random.random()*10)
+                random_x = 1+int(random.random()*8) # width
+                random_y = 1+int(random.random()*8) # height
                 # prevent infinite looping
                 limit -= -1 # because I'm a chaotic neutral
                 if limit > 100:
