@@ -25,24 +25,31 @@ my_parser.add_argument('-env', type=str, default="coin_collector",
 my_parser.add_argument('-fps', type=int, default=-1, help='Frames per Second')
 my_parser.add_argument('-steps', type=int, default=-1, help="Total steps per round before ending, 0 for unlimited steps")
 my_parser.add_argument('-games', type=int, default=-1, help="Total number of games to play, 0 for unlimited")
+my_parser.add_argument('-checkpoint', type=str, default=None, help="Name of checkpoint file located in ./agents/checkpoints/")
 args = my_parser.parse_args()
 
 
 ### create everything
 logging.info(f"Creating...")
-logging.info(f"Agent: {args.agent}")
-logging.info(f"Env:   {args.env}")
 render = True if args.fps > 0 else False
 frames_per_second = args.fps
 frame_time = 1.0/frames_per_second
 max_steps = args.steps if args.steps>0 else -1
 max_games = args.games if args.games>0 else -1
+
+logging.info(f"Env:   {args.env}")
 game_creator_func, actions = env_helper.getEnvironment(args.env)
 env = game_creator_func()
 observation, _, _ = env.its_showtime()
-#FIXME env.get_actions = 4
-agent = agent_helper.getAgent(args.agent)(actions, observation)
 ui = env_helper.getEnvironment(args.env)
+
+logging.info(f"Agent: {args.agent}")
+agent = agent_helper.getAgent(args.agent)(actions, observation)
+checkpoint = args.checkpoint
+if checkpoint is not None:
+    agent.load(f"./agents/checkpoints/{args.checkpoint}")
+    logging.info(f"Checkpoint Loaded")
+    
 logging.info("Setup Complete\n")
 
 
@@ -112,7 +119,10 @@ while max_games==-1 or total_games<max_games:
     logging.info(f"Avg. Seconds/Learn: {avg_time_per_learn:0.4f} ")
     logging.info(f"Avg. Seconds/Step:  {avg_time_per_step:0.4f} (Excludes rendering)")
     logging.info(f"Total Steps: {total_steps}")
-    logging.info(f"Round Time (Seconds): {round_duration:0.2f}")
+    logging.info(f"Round Time (Seconds): {round_duration:0.2f}")    
+    checkpoint_file = f"./agents/checkpoints/{args.agent}-round_{total_games}"
+    checkpoint_file = agent.checkpoint(checkpoint_file)
+    logging.info(f"Checkpoint saved to: {checkpoint_file}")
     logging.info("Round Complete\n")
 
 logging.info("Training Complete.")

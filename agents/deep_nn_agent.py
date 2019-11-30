@@ -25,7 +25,7 @@ def _construct_model(inputs,n_outputs):
     model.add(Dense(thickness, input_dim=input_len, activation="relu"))
     for _ in range(hidden_layers):
         model.add(Dense(thickness, activation="relu"))
-    model.add(Dense(n_outputs))
+    model.add(Dense(n_outputs, activation="sigmoid"))
     model.compile(loss="mse",optimizer=Adam())
 
     return model
@@ -54,9 +54,10 @@ class DeepNNAgent(agent.Agent):
         pass
 
     def checkpoint(self, filename):
-        # model.save(filename)
-        pass
+        filename=filename+".ckpt"
+        self.model.save_weights(filename)
+        return filename
 
     def load(self, checkpoint_file):
-        # self.model.load(checkpoint_file)
+        self.model.load_weights(checkpoint_file)
         pass
