@@ -37,11 +37,10 @@ frames_per_second = args.fps
 frame_time = 1.0/frames_per_second
 max_steps = args.steps if args.steps>0 else -1
 max_games = args.games if args.games>0 else -1
-game_creator_func = env_helper.CoinCollectorEnvironment
+game_creator_func, actions = env_helper.getEnvironment(args.env)
 env = game_creator_func()
 observation, _, _ = env.its_showtime()
 #FIXME env.get_actions = 4
-actions = 4
 agent = agent_helper.getAgent(args.agent)(actions, observation)
 ui = env_helper.getEnvironment(args.env)
 logging.info("Setup Complete\n")
@@ -98,7 +97,7 @@ while max_games==-1 or total_games<max_games:
             time_diff = frame_time - time_step_duration
             if time_diff>0:
                 time.sleep(time_diff)
-            #FIXME ??? UI.render ???
+            #TODO UI.render 
 
     round_duration = time.time() - time_round_start
     avg_time_per_actions = time_action_sum/total_steps
