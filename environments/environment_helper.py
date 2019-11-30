@@ -3,15 +3,15 @@
 ###
 def CoinCollectorEnvironment():
     from environments.coin_collector import coin_collector
-    return coin_collector.make_game()
+    return coin_collector.make_game
 
 def CoinCollectorUI():
     from environments.coin_collector import coin_collector
-    return coin_collector.make_ui()
+    return coin_collector.make_ui
 
 def ShockwaveEnvironment(level):
     from environments.shockwave import shockwave
-    return shockwave.make_game(level)
+    return shockwave.make_game
 
 ###
 ### Convenience Environment Constructors
