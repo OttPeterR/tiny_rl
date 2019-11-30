@@ -10,6 +10,10 @@ def DeepNNAgent():
     from agents import deep_nn_agent
     return deep_nn_agent.DeepNNAgent
 
+def DQNAgent():
+    from agents import dqn
+    return dqn.DQNAgent
+
 def RainbowAgent():
     from agents import rainbow
     return rainbow.RainbowAgent
@@ -24,6 +28,7 @@ def A3CAgent():
 agent_dict = {
     "random":RandomAgent,
     "deep_nn":DeepNNAgent,
+    "dqn":DQNAgent,
     "rainbow":RainbowAgent,
     "a3c":A3CAgent,
 }
