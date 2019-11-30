@@ -122,6 +122,7 @@ while max_games==-1 or total_games<max_games:
     avg_time_per_step = time_step_sum/total_steps
 
     ### Print out final metrics after one round
+    logging.info("")
     if not env.game_over:
         logging.info(f"! Game Maxed-Out Step Limit, No Victory")
     logging.info(f"Total Reward: {total_reward:0.1f}")
