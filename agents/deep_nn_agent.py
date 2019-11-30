@@ -82,7 +82,7 @@ class DeepNNAgent(agent.Agent):
                 target_action[s_action] = 1
                 inputs = _processInputs(s_old_state)
                 self.model.fit([inputs], [[target_action]], epochs=1, verbose=0)   
-
+        prog_bar.close()
 
     def checkpoint(self, filename):
         filename=filename+".ckpt"

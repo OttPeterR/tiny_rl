@@ -92,7 +92,7 @@ class DQNAgent(agent.Agent):
                     target_action[s_action] = s_reward + Q_future * self.gamma
                 
                 self.model.fit([inputs], [[target_action]], epochs=1, verbose=0)   
-
+        prog_bar.close()
         # copy weights to the target network
         weights = self.model.get_weights()
         target_weights = self.target_model.get_weights()
