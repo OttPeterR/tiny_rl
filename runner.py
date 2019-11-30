@@ -68,12 +68,12 @@ while max_games==-1 or total_games<max_games:
     time_learn_sum = 0
     time_step_sum = 0
 
-    prog_bar = tqdm(total=max_steps if max_steps>0 else 10_000_000)
+    prog_bar = tqdm(total=max_steps if max_steps>0 else 10_000)
     prog_bar.update(0)
     while (not env.game_over) and (max_steps==-1 or total_steps<max_steps):
         time_step_start = time.time()
         total_steps += 1
-        prog_bar.update(total_steps)
+        prog_bar.update(1)
 
         # Act
         time_before_action = time.time()  
@@ -98,7 +98,6 @@ while max_games==-1 or total_games<max_games:
             if time_diff>0:
                 time.sleep(time_diff)
             #TODO UI.render 
-
     round_duration = time.time() - time_round_start
     avg_time_per_actions = time_action_sum/total_steps
     avg_time_per_learn = time_learn_sum/total_steps
