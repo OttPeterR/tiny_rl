@@ -9,14 +9,13 @@ from tqdm import tqdm
 
 
 
-def createModel(input_size, output_actions, learning_rate):
+def _createModel(input_size, output_actions, learning_rate):
     model = Sequential()
-    model.add(Dense(24, input_dim=input_size, activation="relu"))
-    model.add(Dense(48, activation="relu"))
-    model.add(Dense(24, activation="relu"))
+    model.add(Dense(128, input_dim=input_size, activation="relu"))
+    model.add(Dense(128, activation="relu"))
+    model.add(Dense(128, activation="relu"))
     model.add(Dense(output_actions))
-    model.compile(loss="mean_squared_error",
-        optimizer=Adam(lr=learning_rate))
+    model.compile(loss="mse", optimizer=Adam(lr=learning_rate))
     return model
 
 
@@ -31,7 +30,7 @@ class DQNAgent(agent.Agent):
     def __init__(self, actions, sample_state):
         self.actions=actions
         self.memory = []
-        self.memory_limit = 64_000
+        self.memory_limit = 512_000
 
         self.gamma = 0.95 # future reward decay rate
         self.epsilon = 1.0 # exploration/exploitation (1=totally random)
@@ -41,9 +40,9 @@ class DQNAgent(agent.Agent):
 
         inputs = _processInputs(sample_state)
         # this model decides what actions are taken
-        self.model = createModel(inputs.size, actions, self.learning_rate)
+        self.model = _createModel(inputs.size, actions, self.learning_rate)
         # this model decides which actions *should* be taken
-        self.target_model = createModel(inputs.size, actions, self.learning_rate)    
+        self.target_model = _createModel(inputs.size, actions, self.learning_rate)    
     
     def act(self, state):
         # roll dice to do a random move
@@ -59,7 +58,7 @@ class DQNAgent(agent.Agent):
     def saveStateTransition(self, old_state, new_state, action, reward, game_over):
         self.memory.append((old_state, new_state, action, reward, game_over))
         while len(self.memory) > self.memory_limit:
-            rand_index = np.random.randint(self.memory_limit)
+            rand_index = np.random.randint(self.memory_limit*0.05)
             del self.memory[rand_index]
         
 
@@ -67,8 +66,8 @@ class DQNAgent(agent.Agent):
         self.epsilon *= self.epsilon_decay
         self.epsilon = max(self.epsilon_min, self.epsilon)
 
-        batch_size = 512
-        epochs = 10
+        batch_size = 1024
+        epochs = min(1+len(self.memory)//batch_size, 25)
 
         if len(self.memory) < batch_size: 
             return
